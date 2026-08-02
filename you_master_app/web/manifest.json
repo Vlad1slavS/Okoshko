@@ -1,0 +1,35 @@
+{
+    "name": "YouMaster",
+    "short_name": "YouMaster",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#FFF9F9",
+    "theme_color": "#FF426F",
+    "description": "Сервис онлайн-записи к мастерам и студиям.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
