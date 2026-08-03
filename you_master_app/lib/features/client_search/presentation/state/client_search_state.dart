@@ -16,6 +16,7 @@ enum SearchSort {
 class ClientSearchState {
   const ClientSearchState({
     this.query = '',
+    this.queryDraft = '',
     this.category = HomeCategory.all,
     this.sort = SearchSort.recommended,
     this.availableToday = false,
@@ -23,6 +24,7 @@ class ClientSearchState {
   });
 
   final String query;
+  final String queryDraft;
   final HomeCategory category;
   final SearchSort sort;
   final bool availableToday;
@@ -30,6 +32,7 @@ class ClientSearchState {
 
   ClientSearchState copyWith({
     String? query,
+    String? queryDraft,
     HomeCategory? category,
     SearchSort? sort,
     bool? availableToday,
@@ -37,6 +40,7 @@ class ClientSearchState {
   }) {
     return ClientSearchState(
       query: query ?? this.query,
+      queryDraft: queryDraft ?? this.queryDraft,
       category: category ?? this.category,
       sort: sort ?? this.sort,
       availableToday: availableToday ?? this.availableToday,

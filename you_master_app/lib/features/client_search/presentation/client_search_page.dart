@@ -23,7 +23,7 @@ class _ClientSearchPageState extends ConsumerState<ClientSearchPage> {
   void initState() {
     super.initState();
     _searchController = TextEditingController(
-      text: ref.read(clientSearchControllerProvider).query,
+      text: ref.read(clientSearchControllerProvider).queryDraft,
     );
   }
 
@@ -35,22 +35,24 @@ class _ClientSearchPageState extends ConsumerState<ClientSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final results = ref.watch(searchResultsProvider);
+    final resultsAsync = ref.watch(searchResultsProvider);
+    final results = resultsAsync.value?.items ?? const [];
+    final totalItems = resultsAsync.value?.totalItems ?? 0;
     final searchState = ref.watch(clientSearchControllerProvider);
     final hasActiveFilters =
         searchState.availableToday || searchState.minimumRating > 0;
 
-    ref.listen(clientSearchControllerProvider.select((state) => state.query), (
-      previous,
-      next,
-    ) {
-      if (_searchController.text != next) {
-        _searchController.value = TextEditingValue(
-          text: next,
-          selection: TextSelection.collapsed(offset: next.length),
-        );
-      }
-    });
+    ref.listen(
+      clientSearchControllerProvider.select((state) => state.queryDraft),
+      (previous, next) {
+        if (_searchController.text != next) {
+          _searchController.value = TextEditingValue(
+            text: next,
+            selection: TextSelection.collapsed(offset: next.length),
+          );
+        }
+      },
+    );
 
     return Scaffold(
       body: SafeArea(
@@ -136,9 +138,11 @@ class _ClientSearchPageState extends ConsumerState<ClientSearchPage> {
                       children: [
                         Expanded(
                           child: Text(
-                            results.isEmpty
+                            resultsAsync.isLoading
+                                ? 'Ищем мастеров…'
+                                : totalItems == 0
                                 ? 'Ничего не найдено'
-                                : 'Найдено: ${results.length}',
+                                : 'Найдено: $totalItems',
                             style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(fontWeight: FontWeight.w700),
                           ),
@@ -176,7 +180,19 @@ class _ClientSearchPageState extends ConsumerState<ClientSearchPage> {
                 ),
               ),
             ),
-            if (results.isEmpty)
+            if (resultsAsync.isLoading)
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else if (resultsAsync.hasError)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: _SearchErrorState(
+                  onRetry: () => ref.invalidate(searchResultsProvider),
+                ),
+              )
+            else if (results.isEmpty)
               const SliverFillRemaining(
                 hasScrollBody: false,
                 child: _SearchEmptyState(),
@@ -196,6 +212,20 @@ class _ClientSearchPageState extends ConsumerState<ClientSearchPage> {
                       const SizedBox(height: 12),
                 ),
               ),
+            if (resultsAsync.value?.hasNext ?? false)
+              SliverToBoxAdapter(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 28),
+                    child: OutlinedButton(
+                      onPressed: ref
+                          .read(searchResultsProvider.notifier)
+                          .loadNextPage,
+                      child: const Text('Показать ещё'),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -208,6 +238,31 @@ class _ClientSearchPageState extends ConsumerState<ClientSearchPage> {
       showDragHandle: true,
       isScrollControlled: true,
       builder: (context) => const SearchFiltersSheet(),
+    );
+  }
+}
+
+class _SearchErrorState extends StatelessWidget {
+  const _SearchErrorState({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.cloud_off_rounded, size: 56),
+            const SizedBox(height: 14),
+            const Text('Не удалось загрузить мастеров'),
+            const SizedBox(height: 14),
+            FilledButton(onPressed: onRetry, child: const Text('Повторить')),
+          ],
+        ),
+      ),
     );
   }
 }

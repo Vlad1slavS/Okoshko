@@ -119,7 +119,8 @@ void main() {
     expect(tester.widget<TextField>(searchField).controller?.text, 'Екатерина');
 
     await tester.enterText(searchField, 'Анна');
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 450));
+    await tester.pumpAndSettle();
 
     expect(find.text('Анна Иванова'), findsOneWidget);
     expect(find.text('Glamour Haven'), findsNothing);
