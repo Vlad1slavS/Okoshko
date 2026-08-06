@@ -1,5 +1,6 @@
 abstract final class AppRoutes {
   static const entry = '/';
+  static const startup = '/startup';
   static const authPhone = '/auth/phone';
   static const authOtp = '/auth/otp';
   static const authProfile = '/auth/profile';
@@ -35,7 +36,8 @@ abstract final class AppRoutes {
         uri.hasScheme ||
         uri.hasAuthority ||
         value.startsWith('//') ||
-        value.startsWith('/auth')) {
+        value.startsWith('/auth') ||
+        value == startup) {
       return null;
     }
     return uri.toString();

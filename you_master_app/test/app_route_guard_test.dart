@@ -23,6 +23,39 @@ void main() {
     session: AuthSession(accessToken: 'token', user: user),
   );
 
+  test('holds initial route on startup until auth is resolved', () {
+    const auth = AuthState(status: AuthStatus.initializing);
+
+    expect(
+      AppRouteGuard.redirect(auth, Uri.parse('/client/favorites')),
+      '/startup?returnTo=%2Fclient%2Ffavorites',
+    );
+    expect(
+      AppRouteGuard.redirect(
+        auth,
+        Uri.parse('/startup?returnTo=%2Fclient%2Ffavorites'),
+      ),
+      isNull,
+    );
+  });
+
+  test('resolves startup route according to auth and target access', () {
+    expect(
+      AppRouteGuard.redirect(
+        authenticated(client),
+        Uri.parse('/startup?returnTo=%2Fclient%2Ffavorites'),
+      ),
+      AppRoutes.clientFavorites,
+    );
+    expect(
+      AppRouteGuard.redirect(
+        const AuthState(status: AuthStatus.unauthenticated),
+        Uri.parse('/startup?returnTo=%2Fclient%2Ffavorites'),
+      ),
+      '/auth/phone?returnTo=%2Fclient%2Ffavorites',
+    );
+  });
+
   test('allows public pages without authentication', () {
     const auth = AuthState(status: AuthStatus.unauthenticated);
 

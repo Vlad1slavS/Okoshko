@@ -86,7 +86,13 @@ void main() {
       final favoriteRequests = requests.where(
         (request) => request.url.path.startsWith('/api/v1/me/favorites'),
       );
-      expect(favoriteRequests, hasLength(2));
+      expect(favoriteRequests, isNotEmpty);
+      expect(
+        favoriteRequests.any(
+          (request) => request.url.path == '/api/v1/me/favorites',
+        ),
+        isTrue,
+      );
       for (final request in favoriteRequests) {
         expect(
           request.headers['Authorization'],

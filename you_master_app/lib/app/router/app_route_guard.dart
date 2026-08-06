@@ -3,10 +3,19 @@ import 'package:you_master_app/features/auth/presentation/state/auth_controller.
 
 abstract final class AppRouteGuard {
   static String? redirect(AuthState auth, Uri uri) {
-    if (auth.status == AuthStatus.initializing) return null;
-
     final location = uri.path;
     final returnTo = AppRoutes.safeReturnTo(uri.queryParameters['returnTo']);
+
+    if (auth.status == AuthStatus.initializing) {
+      if (location == AppRoutes.startup) return null;
+      return AppRoutes.withReturnTo(AppRoutes.startup, uri.toString());
+    }
+
+    if (location == AppRoutes.startup) {
+      final target = returnTo ?? AppRoutes.clientHome;
+      return redirect(auth, Uri.parse(target)) ?? target;
+    }
+
     final isAuthRoute = location.startsWith('/auth/');
     final isPrivateClientRoute =
         location == AppRoutes.clientAppointments ||

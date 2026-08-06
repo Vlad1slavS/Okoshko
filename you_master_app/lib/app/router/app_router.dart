@@ -5,6 +5,7 @@ import 'package:you_master_app/app/router/app_route_guard.dart';
 import 'package:you_master_app/app/router/app_routes.dart';
 import 'package:you_master_app/app/shell/app_shell.dart';
 import 'package:you_master_app/core/config/app_environment.dart';
+import 'package:you_master_app/design_system/theme/app_colors.dart';
 import 'package:you_master_app/features/app_entry/presentation/app_entry_page.dart';
 import 'package:you_master_app/features/appointments/presentation/client_appointments_page.dart';
 import 'package:you_master_app/features/auth/presentation/complete_profile_page.dart';
@@ -49,6 +50,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.entry,
         builder: (context, state) => const AppEntryPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.startup,
+        builder: (context, state) => const _AppStartupPage(),
       ),
       GoRoute(
         path: AppRoutes.authPhone,
@@ -123,6 +128,15 @@ String? _redirect(Ref ref, GoRouterState routerState) {
 
 class _RouterRefreshNotifier extends ChangeNotifier {
   void refresh() => notifyListeners();
+}
+
+class _AppStartupPage extends StatelessWidget {
+  const _AppStartupPage();
+
+  @override
+  Widget build(BuildContext context) => const Scaffold(
+    body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+  );
 }
 
 final _clientBranches = <StatefulShellBranch>[
