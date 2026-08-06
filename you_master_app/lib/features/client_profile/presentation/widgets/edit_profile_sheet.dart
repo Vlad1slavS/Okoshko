@@ -18,7 +18,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.profile.name);
-    _emailController = TextEditingController(text: widget.profile.email);
+    _emailController = TextEditingController(text: widget.profile.email ?? '');
   }
 
   @override

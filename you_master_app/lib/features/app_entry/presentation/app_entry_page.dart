@@ -39,7 +39,16 @@ class AppEntryPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
                   FilledButton(
+                    onPressed: () => context.go(AppRoutes.authPhone),
+                    child: const Text('Войти по номеру телефона'),
+                  ),
+                  const SizedBox(height: 20),
+                  FilledButton(
                     onPressed: () => context.go(AppRoutes.clientHome),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.surfaceMuted,
+                      foregroundColor: AppColors.primary,
+                    ),
                     child: const Text('Продолжить как клиент'),
                   ),
                   const SizedBox(height: 12),

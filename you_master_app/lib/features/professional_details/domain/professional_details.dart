@@ -8,6 +8,7 @@ class ProfessionalDetails {
     required this.specializations,
     required this.coverAsset,
     required this.avatarAsset,
+    this.avatarUrl,
     required this.rating,
     required this.reviewCount,
     required this.experienceYears,
@@ -30,6 +31,7 @@ class ProfessionalDetails {
   final List<String> specializations;
   final String coverAsset;
   final String avatarAsset;
+  final String? avatarUrl;
   final double rating;
   final int reviewCount;
   final int experienceYears;

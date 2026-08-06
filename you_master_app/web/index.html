@@ -6,157 +6,51 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="YouMaster — онлайн-запись к мастерам и студиям.">
   <meta name="theme-color" content="#FF426F">
-  <title>YouMaster</title>
-  
-  <style>
-  .loading-container {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-color: #FFF9F9; /* Нежно-розовый бьюти-фон */
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-    z-index: 9999;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-    font-family: sans-serif;
-  }
-  
-  .loading-container.fade-out { opacity: 0; visibility: hidden; }
-
-  /* Сцена для элементов */
-  .animation-box {
-    position: relative;
-    width: 200px;
-    height: 250px;
-  }
-
-  /* Пудреница */
-  .powder-case {
-    position: absolute;
-    bottom: 20px; left: 50%;
-    transform: translateX(-50%);
-    width: 90px; height: 16px;
-    background: #E8B4B8; /* Пастельный цвет пудреницы */
-    border-radius: 8px;
-    border: 3px solid #674A40;
-  }
-  .powder-case::before {
-    content: ''; position: absolute;
-    top: 2px; left: 5px; width: 80px; height: 6px;
-    background: #F3D5C0; /* Сама пудра внутри */
-    border-radius: 4px;
-  }
-
-  /* Кисть для макияжа */
-  .brush {
-    position: absolute;
-    top: 10px; left: 85px;
-    width: 30px; height: 120px;
-    transform-origin: bottom center;
-    animation: makeupSequence 2.5s ease-in-out infinite;
-  }
-
-  /* Ручка кисти */
-  .brush-handle {
-    width: 10px; height: 70px;
-    background: #674A40;
-    margin: 0 auto;
-    border-radius: 0 0 4px 4px;
-  }
-
-  /* Металлический зажим */
-  .brush-ferrule {
-    width: 16px; height: 15px;
-    background: #D3A297;
-    margin: 0 auto;
-  }
-
-  /* Ворс кисти */
-  .brush-bristles {
-    width: 30px; height: 35px;
-    background: #E8B4B8;
-    border-radius: 0 0 50% 50%;
-    box-shadow: inset 0 10px 0 #C98A92;
-  }
-
-  /* Частицы пудры (эффект стряхивания) */
-  .powder-particles {
-    position: absolute;
-    top: 115px; left: 65px;
-    width: 70px; height: 40px;
-  }
-  .particle {
-    position: absolute;
-    width: 5px; height: 5px;
-    background: #F3D5C0;
-    border-radius: 50%;
-    opacity: 0;
-  }
-
-  /* Тайминги для отдельных частиц при стряхивании */
-  .p1 { left: 10px; top: 10px; animation: particleBlow 2.5s infinite 1.1s; }
-  .p2 { left: 30px; top: 5px;  animation: particleBlow 2.5s infinite 1.2s; }
-  .p3 { left: 50px; top: 15px; animation: particleBlow 2.5s infinite 1.15s; }
-
-  .loading-text {
-    margin-top: 20px;
-    color: #674A40;
-    font-size: 16px;
-    letter-spacing: 1px;
-    font-weight: 500;
-  }
-
-  /* Главная анимация: Опускание -> Стряхивание */
-  @keyframes makeupSequence {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    /* Шаг 1: Опускаем кисть в пудру */
-    30% { transform: translateY(85px) scaleY(0.9) rotate(0deg); }
-    45% { transform: translateY(85px) scaleY(1) rotate(0deg); }
-    /* Шаг 2: Резко поднимаем */
-    55% { transform: translateY(20px) rotate(0deg); }
-    /* Шаг 3: Быстро стряхиваем (вибрация влево-вправо) */
-    62% { transform: translateY(20px) rotate(-12deg); }
-    66% { transform: translateY(20px) rotate(12deg); }
-    70% { transform: translateY(20px) rotate(-10deg); }
-    74% { transform: translateY(20px) rotate(10deg); }
-    78% { transform: translateY(20px) rotate(-5deg); }
-    82% { transform: translateY(20px) rotate(5deg); }
-    86% { transform: translateY(20px) rotate(0deg); }
-  }
-
-  /* Анимация разлета частиц */
-  @keyframes particleBlow {
-    0% { transform: translateY(0) scale(1); opacity: 0; }
-    5% { opacity: 1; }
-    40% { transform: translateY(30px) translateX(var(--dir, 10px)); scale: 0.5; opacity: 0; }
-    100% { opacity: 0; }
-  }
-</style>
-
+  <title>Окошко</title>
 </head>
+<style>
+  html,
+  body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+  }
+
+  #loading-indicator {
+      position: fixed;
+      inset: 0;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .loader-image {
+    width: 140px;
+
+    animation: breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes breathe {
+    0% {
+        transform: scale(0.96);
+        opacity: .95;
+    }
+
+    50% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.96);
+        opacity: .95;
+    }
+}
+</style>
 <body>
-<!-- Структура бьюти-лоадера -->
 <div id="loading-indicator" class="loading-container">
-  <div class="animation-box">
-    
-    <!-- Кисть -->
-    <div class="brush">
-      <div class="brush-handle"></div>    <!-- Сначала длинная ручка -->
-      <div class="brush-ferrule"></div>   <!-- Затем металлический зажим -->
-      <div class="brush-bristles"></div>  <!-- И в самом низу ворс -->
-    </div>
-    
-    <!-- Облако частиц (задаем разное направление разлета через стили) -->
-    <div class="powder-particles">
-      <div class="particle p1" style="--dir: -25px;"></div>
-      <div class="particle p2" style="--dir: 5px;"></div>
-      <div class="particle p3" style="--dir: 25px;"></div>
-    </div>
-    
-    <!-- Пудреница -->
-    <div class="powder-case"></div>
-    
-  </div>
-  <div class="loading-text">Создаем красоту...</div>
+    <img src="assets/images/auth/logo.png" alt="Loading..." class="loader-image">
 </div>
 
   <script>

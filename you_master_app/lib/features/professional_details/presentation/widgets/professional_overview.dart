@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:you_master_app/design_system/widgets/professional_avatar.dart';
 import 'package:you_master_app/design_system/theme/app_colors.dart';
 import 'package:you_master_app/features/professional_details/domain/professional_details.dart';
 
@@ -16,9 +17,10 @@ class ProfessionalOverview extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CircleAvatar(
-                radius: 42,
-                backgroundImage: AssetImage(details.avatarAsset),
+              ProfessionalAvatar(
+                size: 84,
+                imageUrl: details.avatarUrl,
+                imageAsset: details.avatarAsset,
               ),
               const SizedBox(width: 14),
               Expanded(

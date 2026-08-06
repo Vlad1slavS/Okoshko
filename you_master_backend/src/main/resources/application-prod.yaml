@@ -4,6 +4,14 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
+app:
+  auth:
+    otp-pepper: ${AUTH_OTP_PEPPER}
+    jwt-secret: ${AUTH_JWT_SECRET}
+    expose-dev-code: false
+    cookie-secure: true
+    cookie-same-site: Lax
+
 logging:
   level:
     root: INFO

@@ -18,6 +18,18 @@ import java.time.Instant;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserAccount extends BaseEntity {
 
+    public UserAccount(String phone, Instant verifiedAt) {
+        this.phone = phone;
+        this.status = UserStatus.ACTIVE;
+        this.phoneVerifiedAt = verifiedAt;
+        this.lastLoginAt = verifiedAt;
+    }
+
+    public void recordPhoneLogin(Instant now) {
+        phoneVerifiedAt = phoneVerifiedAt == null ? now : phoneVerifiedAt;
+        lastLoginAt = now;
+    }
+
     @Column(nullable = false, unique = true, length = 20)
     private String phone;
 

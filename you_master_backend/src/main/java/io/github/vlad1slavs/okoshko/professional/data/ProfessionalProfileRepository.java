@@ -11,6 +11,9 @@ import java.util.UUID;
 
 public interface ProfessionalProfileRepository extends JpaRepository<ProfessionalProfile, UUID> {
 
+    boolean existsByUserId(UUID userId);
+    boolean existsByIdAndUserId(UUID id, UUID userId);
+
     Optional<ProfessionalProfile> findByIdAndStatus(UUID id, ProfessionalStatus status);
 
     @Query("""

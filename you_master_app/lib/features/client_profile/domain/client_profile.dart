@@ -5,8 +5,8 @@ class ClientProfile {
   const ClientProfile({
     required this.name,
     required this.phone,
-    required this.email,
-    required this.avatarAsset,
+    this.email,
+    this.avatarAsset,
     required this.isPhoneVerified,
     required this.upcomingAppointments,
     required this.favoriteCount,
@@ -15,8 +15,8 @@ class ClientProfile {
 
   final String name;
   final String phone;
-  final String email;
-  final String avatarAsset;
+  final String? email;
+  final String? avatarAsset;
   final bool isPhoneVerified;
   final int upcomingAppointments;
   final int favoriteCount;

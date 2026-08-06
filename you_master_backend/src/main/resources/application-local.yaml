@@ -8,6 +8,10 @@ spring:
   jpa:
     show-sql: false
 
+app:
+  auth:
+    expose-dev-code: true
+
 logging:
   level:
     io.github.vlad1slavs.okoshko: DEBUG

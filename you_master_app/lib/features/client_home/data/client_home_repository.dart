@@ -138,7 +138,11 @@ class MockClientHomeRepository implements ClientHomeRepository {
       case SearchSort.rating:
         items.sort((a, b) => b.rating.compareTo(a.rating));
       case SearchSort.distance:
-        items.sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
+        items.sort(
+          (a, b) => (a.distanceKm ?? double.infinity).compareTo(
+            b.distanceKm ?? double.infinity,
+          ),
+        );
       case SearchSort.price:
         items.sort((a, b) => a.priceFrom.compareTo(b.priceFrom));
     }
@@ -252,21 +256,15 @@ class BackendClientHomeRepository implements ClientHomeRepository {
       description: json['description'] as String? ?? '',
       rating: (json['rating'] as num).toDouble(),
       reviewCount: json['reviewsCount'] as int,
-      distanceKm: (json['distanceKm'] as num?)?.toDouble() ?? 0,
+      distanceKm: (json['distanceKm'] as num?)?.toDouble(),
       durationLabel: durationFrom == durationTo
           ? '$durationFrom мин'
           : '$durationFrom–$durationTo мин',
       priceFrom: (json['priceFromMinor'] as int) ~/ 100,
-      imageAsset: _imageAsset(slug),
+      imageUrl: json['avatarUrl'] as String?,
       categories: categories,
       availableToday: false,
       badge: null,
     );
   }
-
-  String _imageAsset(String slug) => switch (slug) {
-    'ekaterina-smirnova' => 'assets/images/home/ekaterina.webp',
-    'anna-ivanova' => 'assets/images/home/anna.webp',
-    _ => 'assets/images/home/glamour_haven.webp',
-  };
 }

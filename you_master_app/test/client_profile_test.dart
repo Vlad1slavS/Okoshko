@@ -15,7 +15,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Екатерина Иванова'), findsOneWidget);
+    expect(find.text('Пользователь'), findsOneWidget);
     expect(find.text('Мои записи'), findsOneWidget);
     expect(find.text('Избранное'), findsOneWidget);
     expect(find.text('Уведомления'), findsOneWidget);

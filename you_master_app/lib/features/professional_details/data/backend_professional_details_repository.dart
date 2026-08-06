@@ -41,6 +41,7 @@ class BackendProfessionalDetailsRepository
       specializations: categories,
       coverAsset: content.coverAsset,
       avatarAsset: content.avatarAsset,
+      avatarUrl: profile['avatarUrl'] as String?,
       rating: (profile['rating']! as num).toDouble(),
       reviewCount: profile['reviewsCount']! as int,
       experienceYears: _experienceYears(

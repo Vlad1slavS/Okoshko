@@ -39,6 +39,16 @@ springdoc:
     operations-sorter: method
 
 app:
+  auth:
+    otp-pepper: ${AUTH_OTP_PEPPER:local-development-otp-pepper-change-me}
+    jwt-secret: ${AUTH_JWT_SECRET:local-development-jwt-secret-change-me-32-bytes}
+    otp-ttl: 5m
+    resend-delay: 60s
+    access-token-ttl: 15m
+    refresh-token-ttl: 30d
+    expose-dev-code: false
+    cookie-secure: false
+    cookie-same-site: Lax
   cors:
     allowed-origin-patterns: ${CORS_ALLOWED_ORIGIN_PATTERNS:http://localhost:*,http://127.0.0.1:*}
 

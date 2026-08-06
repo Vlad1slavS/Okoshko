@@ -36,6 +36,12 @@ public class ClientProfile {
     @Column(name = "display_name", nullable = false, length = 120)
     private String displayName;
 
+    @Column(name = "first_name", nullable = false, length = 60)
+    private String firstName;
+
+    @Column(name = "last_name", length = 60)
+    private String lastName;
+
     @Column(name = "avatar_url")
     private String avatarUrl;
 
@@ -49,4 +55,17 @@ public class ClientProfile {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    public ClientProfile(UserAccount user, String firstName, String lastName) {
+        this.user = user;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.displayName = lastName == null ? firstName : firstName + " " + lastName;
+    }
+
+    public void updateName(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.displayName = lastName == null ? firstName : firstName + " " + lastName;
+    }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:you_master_app/app/router/app_routes.dart';
+import 'package:you_master_app/core/config/app_environment.dart';
 import 'package:you_master_app/design_system/theme/app_colors.dart';
 import 'package:you_master_app/features/client_home/presentation/widgets/home_category_selector.dart';
 import 'package:you_master_app/features/client_home/presentation/widgets/professional_card.dart';
@@ -116,11 +117,19 @@ class _ClientSearchPageState extends ConsumerState<ClientSearchPage> {
                           ),
                           const SizedBox(width: 8),
                           FilterChip(
-                            label: const Text('Сегодня'),
+                            label: Text(
+                              AppEnvironment.useRemoteApi
+                                  ? 'Сегодня · скоро'
+                                  : 'Сегодня',
+                            ),
                             selected: searchState.availableToday,
-                            onSelected: ref
-                                .read(clientSearchControllerProvider.notifier)
-                                .setAvailableToday,
+                            onSelected: AppEnvironment.useRemoteApi
+                                ? null
+                                : ref
+                                      .read(
+                                        clientSearchControllerProvider.notifier,
+                                      )
+                                      .setAvailableToday,
                           ),
                           const SizedBox(width: 8),
                           FilterChip(
@@ -153,7 +162,11 @@ class _ClientSearchPageState extends ConsumerState<ClientSearchPage> {
                             isDense: true,
                             borderRadius: BorderRadius.circular(12),
                             items: [
-                              for (final sort in SearchSort.values)
+                              for (final sort in SearchSort.values.where(
+                                (sort) =>
+                                    !AppEnvironment.useRemoteApi ||
+                                    sort != SearchSort.distance,
+                              ))
                                 DropdownMenuItem(
                                   value: sort,
                                   child: Text(

@@ -31,9 +31,20 @@ public class SecurityConfiguration {
                                 "/swagger-ui/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // Temporary until phone/JWT authentication is implemented.
-                        .anyRequest().permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/v1/auth/otp/request",
+                                "/api/v1/auth/otp/verify",
+                                "/api/v1/auth/refresh",
+                                "/api/v1/auth/logout"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/professionals/*/calendar",
+                                "/api/v1/professionals/*/availability-starts"
+                        ).authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/professionals/**").permitAll()
+                        .anyRequest().authenticated()
                 )
+                .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> { }))
                 .build();
     }
 

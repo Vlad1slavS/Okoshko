@@ -6,10 +6,10 @@ import 'package:you_master_app/design_system/theme/app_colors.dart';
 import 'package:you_master_app/features/client_location/presentation/state/client_location_controller.dart';
 import 'package:you_master_app/features/client_profile/presentation/state/client_profile_controller.dart';
 import 'package:you_master_app/features/client_profile/presentation/widgets/become_professional_card.dart';
-import 'package:you_master_app/features/client_profile/presentation/widgets/edit_profile_sheet.dart';
 import 'package:you_master_app/features/client_profile/presentation/widgets/profile_header.dart';
 import 'package:you_master_app/features/client_profile/presentation/widgets/profile_menu_section.dart';
 import 'package:you_master_app/features/client_profile/presentation/widgets/profile_stats.dart';
+import 'package:you_master_app/features/auth/presentation/state/auth_controller.dart';
 
 class ClientProfilePage extends ConsumerWidget {
   const ClientProfilePage({super.key});
@@ -36,7 +36,7 @@ class ClientProfilePage extends ConsumerWidget {
         children: [
           ProfileHeader(
             profile: profile,
-            onEdit: () => _editProfile(context, ref),
+            onEdit: () => _showUnavailable(context),
           ),
           const SizedBox(height: 18),
           ProfileStats(
@@ -126,7 +126,7 @@ class ClientProfilePage extends ConsumerWidget {
                 icon: Icons.logout_rounded,
                 title: 'Выйти',
                 foregroundColor: AppColors.error,
-                onTap: () => _confirmLogout(context),
+                onTap: () => _confirmLogout(context, ref),
               ),
             ],
           ),
@@ -135,23 +135,7 @@ class ClientProfilePage extends ConsumerWidget {
     );
   }
 
-  Future<void> _editProfile(BuildContext context, WidgetRef ref) async {
-    final profile = ref.read(clientProfileControllerProvider);
-    final result = await showModalBottomSheet<({String name, String email})>(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (context) => EditProfileSheet(profile: profile),
-    );
-
-    if (result != null && result.name.trim().isNotEmpty) {
-      ref
-          .read(clientProfileControllerProvider.notifier)
-          .updateProfile(name: result.name, email: result.email);
-    }
-  }
-
-  Future<void> _confirmLogout(BuildContext context) async {
+  Future<void> _confirmLogout(BuildContext context, WidgetRef ref) async {
     final shouldLogout = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -178,7 +162,8 @@ class ClientProfilePage extends ConsumerWidget {
     );
 
     if (shouldLogout == true && context.mounted) {
-      context.go(AppRoutes.entry);
+      await ref.read(authControllerProvider.notifier).logout();
+      if (context.mounted) context.go(AppRoutes.authPhone);
     }
   }
 

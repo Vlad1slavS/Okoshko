@@ -27,38 +27,38 @@ class ProfessionalControllerIntegrationTest extends PostgresIntegrationTest {
                 .andExpect(jsonPath("$.id").value(PROFESSIONAL_ID))
                 .andExpect(jsonPath("$.displayName").value("Екатерина Смирнова"))
                 .andExpect(jsonPath("$.business.type").value("SOLO"))
-                .andExpect(jsonPath("$.location.city").value("Москва"));
+                .andExpect(jsonPath("$.location.city").value("Чита"));
     }
 
     @Test
     void returnsPaginatedProfessionalCatalog() throws Exception {
         mockMvc.perform(get("/api/v1/professionals")
-                        .param("city", "Москва")
+                        .param("city", "Чита")
                         .param("category", "manicure")
                         .param("page", "0")
                         .param("size", "20"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.items.length()").value(1))
+                .andExpect(jsonPath("$.items.length()").value(2))
                 .andExpect(jsonPath("$.items[0].slug").value("ekaterina-smirnova"))
                 .andExpect(jsonPath("$.items[0].priceFromMinor").value(120000))
                 .andExpect(jsonPath("$.items[0].categorySlugs[0]").value("manicure"))
-                .andExpect(jsonPath("$.totalItems").value(1))
+                .andExpect(jsonPath("$.totalItems").value(2))
                 .andExpect(jsonPath("$.hasNext").value(false));
     }
 
     @Test
     void filtersCatalogByQueryAndReturnsPopularProfessionals() throws Exception {
         mockMvc.perform(get("/api/v1/professionals")
-                        .param("city", "Москва")
+                        .param("city", "Чита")
                         .param("query", "покрытием"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items[0].slug").value("ekaterina-smirnova"));
 
         mockMvc.perform(get("/api/v1/professionals/popular")
-                        .param("city", "Москва")
+                        .param("city", "Чита")
                         .param("limit", "5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].slug").value("ekaterina-smirnova"));
+                .andExpect(jsonPath("$[0].slug").value("olga-sokolova"));
     }
 
     @Test
@@ -89,7 +89,7 @@ class ProfessionalControllerIntegrationTest extends PostgresIntegrationTest {
                 ))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.professional.id").value(PROFESSIONAL_ID))
-                .andExpect(jsonPath("$.professional.location.city").value("Москва"))
+                .andExpect(jsonPath("$.professional.location.city").value("Чита"))
                 .andExpect(jsonPath("$.services.length()").value(3));
     }
 
@@ -97,7 +97,7 @@ class ProfessionalControllerIntegrationTest extends PostgresIntegrationTest {
     void aggregateReturnsNotFoundWithoutLoadingServices() throws Exception {
         mockMvc.perform(get(
                         "/api/v1/professionals/by-slug/{slug}/details",
-                        "anna-ivanova"
+                        "missing-professional"
                 ))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("RESOURCE_NOT_FOUND"));

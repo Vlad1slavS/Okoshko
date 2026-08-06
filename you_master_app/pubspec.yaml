@@ -80,6 +80,7 @@ flutter:
     - assets/images/home/
     - assets/images/professional_details/
     - assets/images/filter_widget/
+    - assets/images/auth/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

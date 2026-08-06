@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:you_master_app/design_system/theme/app_colors.dart';
+import 'package:you_master_app/design_system/widgets/professional_avatar.dart';
 import 'package:you_master_app/features/client_home/domain/professional_preview.dart';
 import 'package:you_master_app/features/favorites/presentation/state/favorites_controller.dart';
 
@@ -39,14 +40,11 @@ class ProfessionalCard extends ConsumerWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
+              ProfessionalAvatar(
+                size: 110,
+                imageUrl: professional.imageUrl,
+                imageAsset: professional.imageAsset,
                 borderRadius: BorderRadius.circular(14),
-                child: Image.asset(
-                  professional.imageAsset,
-                  width: 110,
-                  height: 110,
-                  fit: BoxFit.cover,
-                ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -155,8 +153,10 @@ class ProfessionalCard extends ConsumerWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      '${professional.distanceKm.toStringAsFixed(1)} км от вас'
-                      '  •  ${professional.durationLabel}',
+                      professional.distanceKm == null
+                          ? professional.durationLabel
+                          : '${professional.distanceKm!.toStringAsFixed(1)} км от вас'
+                                '  •  ${professional.durationLabel}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium,

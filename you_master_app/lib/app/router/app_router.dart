@@ -3,7 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:you_master_app/app/router/app_routes.dart';
 import 'package:you_master_app/app/shell/app_shell.dart';
+import 'package:you_master_app/features/auth/presentation/auth_gate_page.dart';
 import 'package:you_master_app/features/app_entry/presentation/app_entry_page.dart';
+import 'package:you_master_app/core/config/app_environment.dart';
+import 'package:you_master_app/features/auth/presentation/otp_auth_page.dart';
+import 'package:you_master_app/features/auth/presentation/phone_auth_page.dart';
+import 'package:you_master_app/features/auth/presentation/complete_profile_page.dart';
 import 'package:you_master_app/features/appointments/presentation/client_appointments_page.dart';
 import 'package:you_master_app/features/client_home/presentation/client_home_page.dart';
 import 'package:you_master_app/features/client_profile/presentation/client_profile_page.dart';
@@ -11,6 +16,9 @@ import 'package:you_master_app/features/client_search/presentation/client_search
 import 'package:you_master_app/features/favorites/presentation/client_favorites_page.dart';
 import 'package:you_master_app/features/placeholders/presentation/feature_placeholder_page.dart';
 import 'package:you_master_app/features/professional_details/presentation/professional_details_page.dart';
+import 'package:you_master_app/features/professional_home/presentation/professional_home_page.dart';
+import 'package:you_master_app/features/professional_calendar/presentation/professional_calendar_page.dart';
+import 'package:you_master_app/features/professional_schedule/presentation/professional_schedule_page.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
@@ -18,7 +26,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: AppRoutes.entry,
-        builder: (context, state) => const AppEntryPage(),
+        builder: (context, state) => AppEnvironment.useRemoteApi
+            ? const AuthGatePage()
+            : const AppEntryPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.authPhone,
+        builder: (context, state) => const PhoneAuthPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.authOtp,
+        builder: (context, state) => const OtpAuthPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.authProfile,
+        builder: (context, state) => const CompleteProfilePage(),
       ),
       GoRoute(
         path: AppRoutes.professionalDetailsPattern,
@@ -112,15 +134,27 @@ final _clientBranches = <StatefulShellBranch>[
 ];
 
 final _professionalBranches = <StatefulShellBranch>[
-  _placeholderBranch(
-    path: AppRoutes.professionalHome,
-    title: 'Главная мастера',
-    icon: Icons.dashboard_rounded,
+  StatefulShellBranch(
+    routes: [
+      GoRoute(
+        path: AppRoutes.professionalHome,
+        builder: (context, state) => const ProfessionalHomePage(),
+      ),
+    ],
   ),
-  _placeholderBranch(
-    path: AppRoutes.professionalCalendar,
-    title: 'Календарь',
-    icon: Icons.calendar_month_rounded,
+  StatefulShellBranch(
+    routes: [
+      GoRoute(
+        path: AppRoutes.professionalCalendar,
+        builder: (context, state) => const ProfessionalCalendarPage(),
+        routes: [
+          GoRoute(
+            path: 'schedule',
+            builder: (context, state) => const ProfessionalSchedulePage(),
+          ),
+        ],
+      ),
+    ],
   ),
   _placeholderBranch(
     path: AppRoutes.professionalCreate,
@@ -128,9 +162,9 @@ final _professionalBranches = <StatefulShellBranch>[
     icon: Icons.add_circle_rounded,
   ),
   _placeholderBranch(
-    path: AppRoutes.professionalMessages,
-    title: 'Сообщения',
-    icon: Icons.chat_bubble_rounded,
+    path: AppRoutes.professionalClients,
+    title: 'Клиенты',
+    icon: Icons.people_rounded,
   ),
   _placeholderBranch(
     path: AppRoutes.professionalCabinet,

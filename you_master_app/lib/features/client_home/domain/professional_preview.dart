@@ -10,7 +10,8 @@ class ProfessionalPreview {
     required this.distanceKm,
     required this.durationLabel,
     required this.priceFrom,
-    required this.imageAsset,
+    this.imageUrl,
+    this.imageAsset,
     required this.categories,
     required this.availableToday,
     this.badge,
@@ -21,10 +22,11 @@ class ProfessionalPreview {
   final String description;
   final double rating;
   final int reviewCount;
-  final double distanceKm;
+  final double? distanceKm;
   final String durationLabel;
   final int priceFrom;
-  final String imageAsset;
+  final String? imageUrl;
+  final String? imageAsset;
   final Set<HomeCategory> categories;
   final bool availableToday;
   final String? badge;

@@ -55,10 +55,11 @@ class SearchResultsController extends AsyncNotifier<ProfessionalPreviewPage> {
     _loadingNextPage = true;
     try {
       final filters = ref.read(clientSearchControllerProvider);
+      final city = ref.read(clientLocationProvider);
       final next = await ref
           .read(clientHomeRepositoryProvider)
           .search(
-            city: ref.read(clientLocationProvider),
+            city: city,
             query: filters.query,
             category: filters.category,
             sort: filters.sort,
@@ -66,6 +67,7 @@ class SearchResultsController extends AsyncNotifier<ProfessionalPreviewPage> {
             page: current.page + 1,
             size: _pageSize,
           );
+      if (!_matchesCurrentQuery(filters, city)) return;
       state = AsyncData(
         ProfessionalPreviewPage(
           items: [...current.items, ...next.items],
@@ -79,6 +81,15 @@ class SearchResultsController extends AsyncNotifier<ProfessionalPreviewPage> {
     } finally {
       _loadingNextPage = false;
     }
+  }
+
+  bool _matchesCurrentQuery(ClientSearchState query, String city) {
+    final current = ref.read(clientSearchControllerProvider);
+    return city == ref.read(clientLocationProvider) &&
+        query.query == current.query &&
+        query.category == current.category &&
+        query.sort == current.sort &&
+        query.minimumRating == current.minimumRating;
   }
 }
 

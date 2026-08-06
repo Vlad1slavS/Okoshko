@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:you_master_app/design_system/theme/app_colors.dart';
 
 enum AppShellMode { client, professional }
 
@@ -24,18 +25,26 @@ class AppShell extends StatelessWidget {
         height: 72,
         indicatorColor: Colors.transparent,
         selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: (index) {
+        onDestinationSelected: (index) async {
+          if (mode == AppShellMode.professional && index == 2) {
+            await _showProfessionalQuickActions(context, navigationShell);
+            return;
+          }
           navigationShell.goBranch(
             index,
             initialLocation: index == navigationShell.currentIndex,
           );
         },
         destinations: [
-          for (final destination in destinations)
+          for (var index = 0; index < destinations.length; index++)
             NavigationDestination(
-              icon: Icon(destination.icon),
-              selectedIcon: Icon(destination.selectedIcon),
-              label: destination.label,
+              icon: mode == AppShellMode.professional && index == 2
+                  ? const _ProfessionalCreateButton()
+                  : Icon(destinations[index].icon),
+              selectedIcon: mode == AppShellMode.professional && index == 2
+                  ? const _ProfessionalCreateButton()
+                  : Icon(destinations[index].selectedIcon),
+              label: destinations[index].label,
             ),
         ],
       ),
@@ -68,6 +77,113 @@ class AppShell extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _showProfessionalQuickActions(
+    BuildContext context,
+    StatefulNavigationShell navigationShell,
+  ) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Быстрое действие',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 12),
+              _QuickActionTile(
+                icon: Icons.person_add_alt_rounded,
+                title: 'Добавить запись',
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  navigationShell.goBranch(1);
+                },
+              ),
+              _QuickActionTile(
+                icon: Icons.access_time_rounded,
+                title: 'Открыть время для записи',
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  navigationShell.goBranch(1);
+                },
+              ),
+              _QuickActionTile(
+                icon: Icons.design_services_outlined,
+                title: 'Добавить услугу',
+                onTap: () => _showUnavailable(sheetContext),
+              ),
+              _QuickActionTile(
+                icon: Icons.local_offer_outlined,
+                title: 'Создать акцию',
+                onTap: () => _showUnavailable(sheetContext),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showUnavailable(BuildContext context) {
+    final messenger = ScaffoldMessenger.of(context);
+    Navigator.pop(context);
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Раздел появится в следующей версии')),
+    );
+  }
+}
+
+class _ProfessionalCreateButton extends StatelessWidget {
+  const _ProfessionalCreateButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 45,
+      height: 45,
+      decoration: const BoxDecoration(
+        color: AppColors.primary,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x33FF426F),
+            blurRadius: 12,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: const Icon(Icons.add_rounded, color: Colors.white, size: 30),
+    );
+  }
+}
+
+class _QuickActionTile extends StatelessWidget {
+  const _QuickActionTile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(icon, color: AppColors.primary),
+      title: Text(title),
+      trailing: const Icon(Icons.chevron_right_rounded),
+      onTap: onTap,
     );
   }
 }
@@ -124,14 +240,14 @@ const _professionalDestinations = [
     selectedIcon: Icons.calendar_month_rounded,
   ),
   _ShellDestination(
-    label: 'Создать',
+    label: '',
     icon: Icons.add_circle_outline_rounded,
     selectedIcon: Icons.add_circle_rounded,
   ),
   _ShellDestination(
-    label: 'Сообщения',
-    icon: Icons.chat_bubble_outline_rounded,
-    selectedIcon: Icons.chat_bubble_rounded,
+    label: 'Клиенты',
+    icon: Icons.people_outline_rounded,
+    selectedIcon: Icons.people_rounded,
   ),
   _ShellDestination(
     label: 'Кабинет',

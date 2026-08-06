@@ -15,7 +15,16 @@ class ProfileHeader extends StatelessWidget {
         CircleAvatar(
           radius: 44,
           backgroundColor: AppColors.primaryContainer,
-          backgroundImage: AssetImage(profile.avatarAsset),
+          backgroundImage: profile.avatarAsset == null
+              ? null
+              : AssetImage(profile.avatarAsset!),
+          child: profile.avatarAsset == null
+              ? const Icon(
+                  Icons.person_outline_rounded,
+                  size: 42,
+                  color: AppColors.primary,
+                )
+              : null,
         ),
         const SizedBox(height: 14),
         Row(
@@ -40,9 +49,12 @@ class ProfileHeader extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 4),
-        Text(profile.phone, style: Theme.of(context).textTheme.bodyMedium),
-        const SizedBox(height: 2),
-        Text(profile.email, style: Theme.of(context).textTheme.bodyMedium),
+        if (profile.phone.isNotEmpty)
+          Text(profile.phone, style: Theme.of(context).textTheme.bodyMedium),
+        if (profile.email?.isNotEmpty == true) ...[
+          const SizedBox(height: 2),
+          Text(profile.email!, style: Theme.of(context).textTheme.bodyMedium),
+        ],
         const SizedBox(height: 10),
         TextButton.icon(
           key: const Key('edit-client-profile'),

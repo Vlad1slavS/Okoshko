@@ -1,5 +1,8 @@
 abstract final class AppRoutes {
   static const entry = '/';
+  static const authPhone = '/auth/phone';
+  static const authOtp = '/auth/otp';
+  static const authProfile = '/auth/profile';
 
   static const clientHome = '/client/home';
   static const clientSearch = '/client/search';
@@ -13,7 +16,8 @@ abstract final class AppRoutes {
 
   static const professionalHome = '/professional/home';
   static const professionalCalendar = '/professional/calendar';
+  static const professionalSchedule = '/professional/calendar/schedule';
   static const professionalCreate = '/professional/create';
-  static const professionalMessages = '/professional/messages';
+  static const professionalClients = '/professional/clients';
   static const professionalCabinet = '/professional/cabinet';
 }
