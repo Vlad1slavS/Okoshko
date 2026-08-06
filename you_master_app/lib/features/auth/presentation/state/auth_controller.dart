@@ -1,9 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:you_master_app/core/config/app_environment.dart';
 import 'package:you_master_app/features/auth/data/auth_repository.dart';
 import 'package:you_master_app/core/network/network_providers.dart';
 
+enum AuthStatus { initializing, authenticated, unauthenticated }
+
 class AuthState {
   const AuthState({
+    this.status = AuthStatus.initializing,
     this.phone,
     this.devCode,
     this.resendAfter = Duration.zero,
@@ -11,6 +15,7 @@ class AuthState {
     this.loading = false,
     this.error,
   });
+  final AuthStatus status;
   final String? phone;
   final String? devCode;
   final Duration resendAfter;
@@ -18,6 +23,7 @@ class AuthState {
   final bool loading;
   final String? error;
   AuthState copyWith({
+    AuthStatus? status,
     String? phone,
     String? devCode,
     Duration? resendAfter,
@@ -26,6 +32,7 @@ class AuthState {
     String? error,
     bool clearError = false,
   }) => AuthState(
+    status: status ?? this.status,
     phone: phone ?? this.phone,
     devCode: devCode ?? this.devCode,
     resendAfter: resendAfter ?? this.resendAfter,
@@ -39,11 +46,21 @@ class AuthController extends Notifier<AuthState> {
   @override
   AuthState build() => const AuthState();
 
+  Future<void> initialize() async {
+    if (state.status != AuthStatus.initializing) return;
+    if (!AppEnvironment.useRemoteApi) {
+      state = const AuthState(status: AuthStatus.unauthenticated);
+      return;
+    }
+    await restoreSession();
+  }
+
   Future<bool> requestOtp(String phone) async {
     state = state.copyWith(loading: true, clearError: true);
     try {
       final result = await ref.read(authRepositoryProvider).requestOtp(phone);
       state = AuthState(
+        status: AuthStatus.unauthenticated,
         phone: phone,
         devCode: result.devCode,
         resendAfter: result.resendAfter,
@@ -66,6 +83,7 @@ class AuthController extends Notifier<AuthState> {
       ref.read(apiClientProvider).setAccessToken(session.accessToken);
       ref.read(apiClientProvider).setUnauthorizedHandler(refreshAccessToken);
       state = state.copyWith(
+        status: AuthStatus.authenticated,
         loading: false,
         session: session,
         clearError: true,
@@ -84,6 +102,7 @@ class AuthController extends Notifier<AuthState> {
       ref.read(apiClientProvider).setAccessToken(session.accessToken);
       ref.read(apiClientProvider).setUnauthorizedHandler(refreshAccessToken);
       state = state.copyWith(
+        status: AuthStatus.authenticated,
         loading: false,
         session: session,
         clearError: true,
@@ -92,7 +111,7 @@ class AuthController extends Notifier<AuthState> {
     } catch (_) {
       ref.read(apiClientProvider).setAccessToken(null);
       ref.read(apiClientProvider).setUnauthorizedHandler(null);
-      state = const AuthState();
+      state = const AuthState(status: AuthStatus.unauthenticated);
       return false;
     }
   }
@@ -106,7 +125,7 @@ class AuthController extends Notifier<AuthState> {
     } catch (_) {
       ref.read(apiClientProvider).setAccessToken(null);
       ref.read(apiClientProvider).setUnauthorizedHandler(null);
-      state = const AuthState();
+      state = const AuthState(status: AuthStatus.unauthenticated);
       return false;
     }
   }
@@ -117,7 +136,7 @@ class AuthController extends Notifier<AuthState> {
     } finally {
       ref.read(apiClientProvider).setAccessToken(null);
       ref.read(apiClientProvider).setUnauthorizedHandler(null);
-      state = const AuthState();
+      state = const AuthState(status: AuthStatus.unauthenticated);
     }
   }
 

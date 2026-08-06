@@ -9,6 +9,7 @@ import io.github.vlad1slavs.okoshko.jooq.tables.AuthRefreshSessions;
 import io.github.vlad1slavs.okoshko.jooq.tables.BusinessAccounts;
 import io.github.vlad1slavs.okoshko.jooq.tables.BusinessLocations;
 import io.github.vlad1slavs.okoshko.jooq.tables.BusinessMembers;
+import io.github.vlad1slavs.okoshko.jooq.tables.ClientFavoriteProfessionals;
 import io.github.vlad1slavs.okoshko.jooq.tables.ClientProfiles;
 import io.github.vlad1slavs.okoshko.jooq.tables.PgpArmorHeaders;
 import io.github.vlad1slavs.okoshko.jooq.tables.PhoneOtpChallenges;
@@ -74,6 +75,11 @@ public class Public extends SchemaImpl {
      * The table <code>public.business_members</code>.
      */
     public final BusinessMembers BUSINESS_MEMBERS = BusinessMembers.BUSINESS_MEMBERS;
+
+    /**
+     * The table <code>public.client_favorite_professionals</code>.
+     */
+    public final ClientFavoriteProfessionals CLIENT_FAVORITE_PROFESSIONALS = ClientFavoriteProfessionals.CLIENT_FAVORITE_PROFESSIONALS;
 
     /**
      * The table <code>public.client_profiles</code>.
@@ -306,6 +312,7 @@ public class Public extends SchemaImpl {
             BusinessAccounts.BUSINESS_ACCOUNTS,
             BusinessLocations.BUSINESS_LOCATIONS,
             BusinessMembers.BUSINESS_MEMBERS,
+            ClientFavoriteProfessionals.CLIENT_FAVORITE_PROFESSIONALS,
             ClientProfiles.CLIENT_PROFILES,
             PgpArmorHeaders.PGP_ARMOR_HEADERS,
             PhoneOtpChallenges.PHONE_OTP_CHALLENGES,

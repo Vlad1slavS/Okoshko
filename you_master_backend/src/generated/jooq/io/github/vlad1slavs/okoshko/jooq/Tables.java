@@ -9,6 +9,7 @@ import io.github.vlad1slavs.okoshko.jooq.tables.AuthRefreshSessions;
 import io.github.vlad1slavs.okoshko.jooq.tables.BusinessAccounts;
 import io.github.vlad1slavs.okoshko.jooq.tables.BusinessLocations;
 import io.github.vlad1slavs.okoshko.jooq.tables.BusinessMembers;
+import io.github.vlad1slavs.okoshko.jooq.tables.ClientFavoriteProfessionals;
 import io.github.vlad1slavs.okoshko.jooq.tables.ClientProfiles;
 import io.github.vlad1slavs.okoshko.jooq.tables.PgpArmorHeaders;
 import io.github.vlad1slavs.okoshko.jooq.tables.PhoneOtpChallenges;
@@ -60,6 +61,11 @@ public class Tables {
      * The table <code>public.business_members</code>.
      */
     public static final BusinessMembers BUSINESS_MEMBERS = BusinessMembers.BUSINESS_MEMBERS;
+
+    /**
+     * The table <code>public.client_favorite_professionals</code>.
+     */
+    public static final ClientFavoriteProfessionals CLIENT_FAVORITE_PROFESSIONALS = ClientFavoriteProfessionals.CLIENT_FAVORITE_PROFESSIONALS;
 
     /**
      * The table <code>public.client_profiles</code>.

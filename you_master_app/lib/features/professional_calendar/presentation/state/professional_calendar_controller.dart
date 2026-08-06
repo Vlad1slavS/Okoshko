@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:you_master_app/core/network/api_retry_policy.dart';
 import 'package:you_master_app/core/network/network_providers.dart';
+import 'package:you_master_app/features/auth/presentation/state/auth_provider_guard.dart';
 import 'package:you_master_app/features/professional_calendar/data/professional_calendar_repository.dart';
 import 'package:you_master_app/features/professional_calendar/domain/professional_calendar.dart';
 
@@ -58,7 +59,10 @@ final professionalCalendarControllerProvider =
 class ProfessionalCalendarController
     extends AsyncNotifier<ProfessionalCalendarState> {
   @override
-  Future<ProfessionalCalendarState> build() => _load(DateTime.now());
+  Future<ProfessionalCalendarState> build() {
+    requireAuthenticatedUser(ref, professional: true);
+    return _load(DateTime.now());
+  }
 
   Future<void> changeMonth(int delta) async {
     final current = state.value;

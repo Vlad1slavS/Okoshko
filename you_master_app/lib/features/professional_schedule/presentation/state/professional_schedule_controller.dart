@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:you_master_app/core/network/api_retry_policy.dart';
 import 'package:you_master_app/core/network/network_providers.dart';
+import 'package:you_master_app/features/auth/presentation/state/auth_provider_guard.dart';
 import 'package:you_master_app/features/professional_calendar/presentation/state/professional_calendar_controller.dart';
 import 'package:you_master_app/features/professional_schedule/data/professional_schedule_repository.dart';
 import 'package:you_master_app/features/professional_schedule/domain/professional_schedule.dart';
@@ -56,6 +57,7 @@ class ProfessionalScheduleController
     extends AsyncNotifier<ProfessionalScheduleState> {
   @override
   Future<ProfessionalScheduleState> build() async {
+    requireAuthenticatedUser(ref, professional: true);
     final today = DateTime.now();
     final services = await ref
         .read(professionalScheduleRepositoryProvider)

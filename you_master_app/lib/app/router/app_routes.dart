@@ -20,4 +20,24 @@ abstract final class AppRoutes {
   static const professionalCreate = '/professional/create';
   static const professionalClients = '/professional/clients';
   static const professionalCabinet = '/professional/cabinet';
+
+  static String withReturnTo(String path, String? returnTo) {
+    final safe = safeReturnTo(returnTo);
+    if (safe == null) return path;
+    return Uri(path: path, queryParameters: {'returnTo': safe}).toString();
+  }
+
+  static String? safeReturnTo(String? value) {
+    if (value == null || value.isEmpty) return null;
+    final uri = Uri.tryParse(value);
+    if (uri == null ||
+        !uri.hasAbsolutePath ||
+        uri.hasScheme ||
+        uri.hasAuthority ||
+        value.startsWith('//') ||
+        value.startsWith('/auth')) {
+      return null;
+    }
+    return uri.toString();
+  }
 }

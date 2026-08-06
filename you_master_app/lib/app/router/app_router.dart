@@ -1,34 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:you_master_app/app/router/app_route_guard.dart';
 import 'package:you_master_app/app/router/app_routes.dart';
 import 'package:you_master_app/app/shell/app_shell.dart';
-import 'package:you_master_app/features/auth/presentation/auth_gate_page.dart';
-import 'package:you_master_app/features/app_entry/presentation/app_entry_page.dart';
 import 'package:you_master_app/core/config/app_environment.dart';
+import 'package:you_master_app/features/app_entry/presentation/app_entry_page.dart';
+import 'package:you_master_app/features/appointments/presentation/client_appointments_page.dart';
+import 'package:you_master_app/features/auth/presentation/complete_profile_page.dart';
 import 'package:you_master_app/features/auth/presentation/otp_auth_page.dart';
 import 'package:you_master_app/features/auth/presentation/phone_auth_page.dart';
-import 'package:you_master_app/features/auth/presentation/complete_profile_page.dart';
-import 'package:you_master_app/features/appointments/presentation/client_appointments_page.dart';
+import 'package:you_master_app/features/auth/presentation/state/auth_controller.dart';
 import 'package:you_master_app/features/client_home/presentation/client_home_page.dart';
 import 'package:you_master_app/features/client_profile/presentation/client_profile_page.dart';
 import 'package:you_master_app/features/client_search/presentation/client_search_page.dart';
 import 'package:you_master_app/features/favorites/presentation/client_favorites_page.dart';
 import 'package:you_master_app/features/placeholders/presentation/feature_placeholder_page.dart';
+import 'package:you_master_app/features/professional_calendar/presentation/professional_calendar_page.dart';
 import 'package:you_master_app/features/professional_details/presentation/professional_details_page.dart';
 import 'package:you_master_app/features/professional_home/presentation/professional_home_page.dart';
-import 'package:you_master_app/features/professional_calendar/presentation/professional_calendar_page.dart';
 import 'package:you_master_app/features/professional_schedule/presentation/professional_schedule_page.dart';
 
+final appInitialLocationProvider = Provider<String>((ref) {
+  final route = WidgetsBinding.instance.platformDispatcher.defaultRouteName;
+  final uri = Uri.tryParse(route);
+  if (uri == null ||
+      !uri.hasAbsolutePath ||
+      uri.hasScheme ||
+      uri.hasAuthority) {
+    return AppRoutes.entry;
+  }
+  return uri.toString();
+});
+
 final appRouterProvider = Provider<GoRouter>((ref) {
+  final refreshNotifier = _RouterRefreshNotifier();
+  ref.listen(
+    authControllerProvider.select((state) => state.status),
+    (previous, next) => refreshNotifier.refresh(),
+  );
+
   final router = GoRouter(
-    initialLocation: AppRoutes.entry,
+    initialLocation: ref.read(appInitialLocationProvider),
+    overridePlatformDefaultLocation: true,
+    refreshListenable: refreshNotifier,
+    redirect: (context, state) => _redirect(ref, state),
     routes: [
       GoRoute(
         path: AppRoutes.entry,
-        builder: (context, state) => AppEnvironment.useRemoteApi
-            ? const AuthGatePage()
-            : const AppEntryPage(),
+        builder: (context, state) => const AppEntryPage(),
       ),
       GoRoute(
         path: AppRoutes.authPhone,
@@ -86,9 +106,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ),
   );
 
-  ref.onDispose(router.dispose);
+  ref.onDispose(() {
+    router.dispose();
+    refreshNotifier.dispose();
+  });
   return router;
 });
+
+String? _redirect(Ref ref, GoRouterState routerState) {
+  if (!AppEnvironment.useRemoteApi) return null;
+  return AppRouteGuard.redirect(
+    ref.read(authControllerProvider),
+    routerState.uri,
+  );
+}
+
+class _RouterRefreshNotifier extends ChangeNotifier {
+  void refresh() => notifyListeners();
+}
 
 final _clientBranches = <StatefulShellBranch>[
   StatefulShellBranch(

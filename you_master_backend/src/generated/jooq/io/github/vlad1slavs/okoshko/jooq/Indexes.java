@@ -9,6 +9,7 @@ import io.github.vlad1slavs.okoshko.jooq.tables.AuthRefreshSessions;
 import io.github.vlad1slavs.okoshko.jooq.tables.BusinessAccounts;
 import io.github.vlad1slavs.okoshko.jooq.tables.BusinessLocations;
 import io.github.vlad1slavs.okoshko.jooq.tables.BusinessMembers;
+import io.github.vlad1slavs.okoshko.jooq.tables.ClientFavoriteProfessionals;
 import io.github.vlad1slavs.okoshko.jooq.tables.PhoneOtpChallenges;
 import io.github.vlad1slavs.okoshko.jooq.tables.ProfessionalAvailabilityStarts;
 import io.github.vlad1slavs.okoshko.jooq.tables.ProfessionalProfiles;
@@ -43,6 +44,7 @@ public class Indexes {
     public static final Index IX_BUSINESS_LOCATIONS_BUSINESS_ACTIVE = Internal.createIndex(DSL.name("ix_business_locations_business_active"), BusinessLocations.BUSINESS_LOCATIONS, new OrderField[] { BusinessLocations.BUSINESS_LOCATIONS.BUSINESS_ACCOUNT_ID, BusinessLocations.BUSINESS_LOCATIONS.IS_ACTIVE }, false);
     public static final Index IX_BUSINESS_LOCATIONS_CITY_ACTIVE = Internal.createIndex(DSL.name("ix_business_locations_city_active"), BusinessLocations.BUSINESS_LOCATIONS, new OrderField[] { BusinessLocations.BUSINESS_LOCATIONS.CITY, BusinessLocations.BUSINESS_LOCATIONS.IS_ACTIVE }, false);
     public static final Index IX_BUSINESS_MEMBERS_PROFESSIONAL = Internal.createIndex(DSL.name("ix_business_members_professional"), BusinessMembers.BUSINESS_MEMBERS, new OrderField[] { BusinessMembers.BUSINESS_MEMBERS.PROFESSIONAL_ID }, false);
+    public static final Index IX_CLIENT_FAVORITES_USER_CREATED_AT = Internal.createIndex(DSL.name("ix_client_favorites_user_created_at"), ClientFavoriteProfessionals.CLIENT_FAVORITE_PROFESSIONALS, new OrderField[] { ClientFavoriteProfessionals.CLIENT_FAVORITE_PROFESSIONALS.CLIENT_USER_ID, ClientFavoriteProfessionals.CLIENT_FAVORITE_PROFESSIONALS.CREATED_AT.desc() }, false);
     public static final Index IX_PHONE_OTP_EXPIRY = Internal.createIndex(DSL.name("ix_phone_otp_expiry"), PhoneOtpChallenges.PHONE_OTP_CHALLENGES, new OrderField[] { PhoneOtpChallenges.PHONE_OTP_CHALLENGES.EXPIRES_AT }, false);
     public static final Index IX_PHONE_OTP_IP_CREATED = Internal.createIndex(DSL.name("ix_phone_otp_ip_created"), PhoneOtpChallenges.PHONE_OTP_CHALLENGES, new OrderField[] { PhoneOtpChallenges.PHONE_OTP_CHALLENGES.REQUEST_IP, PhoneOtpChallenges.PHONE_OTP_CHALLENGES.CREATED_AT.desc() }, false);
     public static final Index IX_PHONE_OTP_PHONE_CREATED = Internal.createIndex(DSL.name("ix_phone_otp_phone_created"), PhoneOtpChallenges.PHONE_OTP_CHALLENGES, new OrderField[] { PhoneOtpChallenges.PHONE_OTP_CHALLENGES.PHONE, PhoneOtpChallenges.PHONE_OTP_CHALLENGES.CREATED_AT.desc() }, false);

@@ -42,10 +42,13 @@ class _OtpAuthPageState extends ConsumerState<OtpAuthPage> {
     _submitted = false;
     if (ok && mounted) {
       final user = ref.read(authControllerProvider).session?.user;
+      final returnTo = AppRoutes.safeReturnTo(
+        GoRouterState.of(context).uri.queryParameters['returnTo'],
+      );
       context.go(
         user?.hasClientProfile == true
-            ? AppRoutes.clientHome
-            : AppRoutes.authProfile,
+            ? returnTo ?? AppRoutes.clientHome
+            : AppRoutes.withReturnTo(AppRoutes.authProfile, returnTo),
       );
     }
   }
@@ -64,7 +67,12 @@ class _OtpAuthPageState extends ConsumerState<OtpAuthPage> {
     final state = ref.watch(authControllerProvider);
     if (state.phone == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) context.go(AppRoutes.authPhone);
+        if (mounted) {
+          final returnTo = GoRouterState.of(
+            context,
+          ).uri.queryParameters['returnTo'];
+          context.go(AppRoutes.withReturnTo(AppRoutes.authPhone, returnTo));
+        }
       });
     }
     final timer = '00:${_seconds.toString().padLeft(2, '0')}';
@@ -76,7 +84,14 @@ class _OtpAuthPageState extends ConsumerState<OtpAuthPage> {
             Align(
               alignment: Alignment.centerLeft,
               child: IconButton(
-                onPressed: () => context.go(AppRoutes.authPhone),
+                onPressed: () {
+                  final returnTo = GoRouterState.of(
+                    context,
+                  ).uri.queryParameters['returnTo'];
+                  context.go(
+                    AppRoutes.withReturnTo(AppRoutes.authPhone, returnTo),
+                  );
+                },
                 icon: const Icon(Icons.arrow_back_rounded),
               ),
             ),

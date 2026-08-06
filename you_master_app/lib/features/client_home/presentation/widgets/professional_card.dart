@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:you_master_app/design_system/theme/app_colors.dart';
 import 'package:you_master_app/design_system/widgets/professional_avatar.dart';
 import 'package:you_master_app/features/client_home/domain/professional_preview.dart';
-import 'package:you_master_app/features/favorites/presentation/state/favorites_controller.dart';
+import 'package:you_master_app/features/favorites/presentation/widgets/favorite_toggle.dart';
 
-class ProfessionalCard extends ConsumerWidget {
+class ProfessionalCard extends StatelessWidget {
   const ProfessionalCard({required this.professional, this.onTap, super.key});
 
   final ProfessionalPreview professional;
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isFavorite = ref.watch(
-      favoritesControllerProvider.select(
-        (favoriteIds) => favoriteIds.contains(professional.id),
-      ),
-    );
-
+  Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
@@ -64,26 +57,27 @@ class ProfessionalCard extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(width: 6),
-                        Tooltip(
-                          message: isFavorite
-                              ? 'Убрать из избранного'
-                              : 'Добавить в избранное',
-                          child: InkWell(
-                            key: Key('favorite-${professional.id}'),
-                            borderRadius: BorderRadius.circular(20),
-                            onTap: () => ref
-                                .read(favoritesControllerProvider.notifier)
-                                .toggle(professional.id),
-                            child: Padding(
-                              padding: const EdgeInsets.all(2),
-                              child: Icon(
-                                isFavorite
-                                    ? Icons.favorite_rounded
-                                    : Icons.favorite_border_rounded,
-                                size: 22,
-                                color: isFavorite
-                                    ? AppColors.primary
-                                    : AppColors.textSecondary,
+                        FavoriteToggle(
+                          professionalId: professional.id,
+                          builder: (context, isFavorite, onTap) => Tooltip(
+                            message: isFavorite
+                                ? 'Убрать из избранного'
+                                : 'Добавить в избранное',
+                            child: InkWell(
+                              key: Key('favorite-${professional.id}'),
+                              borderRadius: BorderRadius.circular(20),
+                              onTap: onTap,
+                              child: Padding(
+                                padding: const EdgeInsets.all(2),
+                                child: Icon(
+                                  isFavorite
+                                      ? Icons.favorite_rounded
+                                      : Icons.favorite_border_rounded,
+                                  size: 22,
+                                  color: isFavorite
+                                      ? AppColors.primary
+                                      : AppColors.textSecondary,
+                                ),
                               ),
                             ),
                           ),

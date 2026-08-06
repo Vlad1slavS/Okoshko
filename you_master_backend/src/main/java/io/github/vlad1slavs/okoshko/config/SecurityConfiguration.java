@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -20,7 +21,7 @@ public class SecurityConfiguration {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> { })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
@@ -37,11 +38,25 @@ public class SecurityConfiguration {
                                 "/api/v1/auth/refresh",
                                 "/api/v1/auth/logout"
                         ).permitAll()
+                        .requestMatchers(
+                                "/api/v1/auth/me",
+                                "/api/v1/auth/me/**",
+                                "/api/v1/me",
+                                "/api/v1/me/**"
+                        ).authenticated()
                         .requestMatchers(HttpMethod.GET,
                                 "/api/v1/professionals/*/calendar",
                                 "/api/v1/professionals/*/availability-starts"
                         ).authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/professionals/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/professionals",
+                                "/api/v1/professionals/popular",
+                                "/api/v1/professionals/*",
+                                "/api/v1/professionals/*/services",
+                                "/api/v1/professionals/by-slug/*",
+                                "/api/v1/professionals/by-slug/*/services",
+                                "/api/v1/professionals/by-slug/*/details"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> { }))

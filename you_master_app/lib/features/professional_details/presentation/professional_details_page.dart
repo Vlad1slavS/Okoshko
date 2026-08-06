@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:you_master_app/app/router/app_routes.dart';
 import 'package:you_master_app/design_system/theme/app_colors.dart';
-import 'package:you_master_app/features/favorites/presentation/state/favorites_controller.dart';
+import 'package:you_master_app/features/favorites/presentation/widgets/favorite_toggle.dart';
 import 'package:you_master_app/features/professional_details/domain/professional_details.dart';
 import 'package:you_master_app/features/professional_details/presentation/state/professional_details_providers.dart';
 import 'package:you_master_app/features/professional_details/presentation/widgets/booking_bottom_bar.dart';
@@ -32,12 +32,6 @@ class _ProfessionalDetailsPageState
     final detailsAsync = ref.watch(
       professionalDetailsProvider(widget.professionalId),
     );
-    final isFavorite = ref.watch(
-      favoritesControllerProvider.select(
-        (favoriteIds) => favoriteIds.contains(widget.professionalId),
-      ),
-    );
-
     final page = detailsAsync.when(
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
@@ -64,13 +58,13 @@ class _ProfessionalDetailsPageState
           ),
         ),
       ),
-      data: (details) => _buildDetails(details, isFavorite),
+      data: _buildDetails,
     );
 
     return _CenteredDetailsFrame(child: page);
   }
 
-  Widget _buildDetails(ProfessionalDetails details, bool isFavorite) {
+  Widget _buildDetails(ProfessionalDetails details) {
     final selectedService = details.services
         .where((service) => service.id == _selectedServiceId)
         .firstOrNull;
@@ -99,15 +93,16 @@ class _ProfessionalDetailsPageState
                 onPressed: () => _showMessage('Ссылка на профиль скопирована'),
               ),
               const SizedBox(width: 8),
-              _CircleAction(
-                icon: isFavorite
-                    ? Icons.favorite_rounded
-                    : Icons.favorite_border_rounded,
-                color: isFavorite ? AppColors.primary : AppColors.textPrimary,
-                tooltip: 'Избранное',
-                onPressed: () => ref
-                    .read(favoritesControllerProvider.notifier)
-                    .toggle(details.id),
+              FavoriteToggle(
+                professionalId: details.id,
+                builder: (context, isFavorite, onTap) => _CircleAction(
+                  icon: isFavorite
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
+                  color: isFavorite ? AppColors.primary : AppColors.textPrimary,
+                  tooltip: 'Избранное',
+                  onPressed: onTap,
+                ),
               ),
               const SizedBox(width: 12),
             ],

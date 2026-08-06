@@ -48,7 +48,10 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
         title: 'Добро пожаловать!',
         message: 'Профиль создан — можно выбирать мастера и записываться.',
       );
-      context.go(AppRoutes.clientHome);
+      final returnTo = AppRoutes.safeReturnTo(
+        GoRouterState.of(context).uri.queryParameters['returnTo'],
+      );
+      context.go(returnTo ?? AppRoutes.clientHome);
     } else {
       AppToast.error(
         context,

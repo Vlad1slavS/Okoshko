@@ -44,7 +44,10 @@ class _PhoneAuthPageState extends ConsumerState<PhoneAuthPage> {
         message:
             'Код отправлен на номер +7 ${digits.substring(0, 3)} ${digits.substring(3, 6)}-${digits.substring(6, 8)}-${digits.substring(8)}',
       );
-      context.go(AppRoutes.authOtp);
+      final returnTo = GoRouterState.of(
+        context,
+      ).uri.queryParameters['returnTo'];
+      context.go(AppRoutes.withReturnTo(AppRoutes.authOtp, returnTo));
     } else {
       final message = ref.read(authControllerProvider).error;
       AppToast.error(

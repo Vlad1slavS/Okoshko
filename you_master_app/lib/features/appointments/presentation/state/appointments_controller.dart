@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:you_master_app/core/network/api_retry_policy.dart';
+import 'package:you_master_app/features/auth/presentation/state/auth_provider_guard.dart';
 import 'package:you_master_app/features/appointments/data/appointments_repository.dart';
 import 'package:you_master_app/features/appointments/domain/appointment.dart';
 import 'package:you_master_app/features/appointments/presentation/state/appointments_state.dart';
@@ -10,6 +12,7 @@ final appointmentsRepositoryProvider = Provider<AppointmentsRepository>(
 final appointmentsControllerProvider =
     AsyncNotifierProvider<AppointmentsController, AppointmentsState>(
       AppointmentsController.new,
+      retry: ApiRetryPolicy.transientErrors,
     );
 
 final appointmentsSelectedTabProvider =
@@ -28,7 +31,10 @@ class AppointmentsController extends AsyncNotifier<AppointmentsState> {
   static const _pageSize = 20;
 
   @override
-  Future<AppointmentsState> build() => _load(AppointmentsTab.upcoming);
+  Future<AppointmentsState> build() {
+    requireAuthenticatedUser(ref);
+    return _load(AppointmentsTab.upcoming);
+  }
 
   Future<void> selectTab(AppointmentsTab tab) async {
     if (ref.read(appointmentsSelectedTabProvider) == tab) return;

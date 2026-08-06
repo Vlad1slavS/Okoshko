@@ -138,6 +138,41 @@ class ApiClient {
     );
   }
 
+  Future<Map<String, Object?>> deleteObject(String path) async {
+    final uri = _resolve(path);
+    final requestId = _createRequestId();
+    final stopwatch = Stopwatch()..start();
+    if (kDebugMode) debugPrint('API -> [$requestId] DELETE $uri');
+    final response = await _sendWithRefresh(
+      () => _httpClient
+          .delete(uri, headers: {..._headers(), 'X-Request-Id': requestId})
+          .timeout(_timeout),
+      allowRefresh: !path.startsWith('/api/v1/auth/'),
+    );
+    if (kDebugMode) {
+      debugPrint(
+        'API <- [${response.headers['x-request-id'] ?? requestId}] '
+        'DELETE $uri -> ${response.statusCode} '
+        '(${stopwatch.elapsedMilliseconds} ms)',
+      );
+    }
+    final payload = response.body.isEmpty
+        ? null
+        : jsonDecode(utf8.decode(response.bodyBytes));
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      if (payload case final Map<String, dynamic> object) return object;
+      throw const FormatException('Expected a JSON object');
+    }
+    final problem = payload is Map<String, dynamic> ? payload : null;
+    throw ApiException(
+      statusCode: response.statusCode,
+      code: problem?['code'] as String?,
+      message:
+          problem?['detail'] as String? ??
+          'Backend request failed with status ${response.statusCode}',
+    );
+  }
+
   Future<Object?> _get(String path) async {
     final uri = _resolve(path);
     final requestId = _createRequestId();

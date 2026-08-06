@@ -11,28 +11,86 @@ class ClientFavoritesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final professionals = ref.watch(favoriteProfessionalsProvider);
+    final favorites = ref.watch(favoriteProfessionalsControllerProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Избранное')),
-      body: professionals.isEmpty
-          ? const _EmptyFavorites()
-          : ListView.separated(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-              itemCount: professionals.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 14),
-              itemBuilder: (context, index) {
-                final professional = professionals[index];
-                return ProfessionalCard(
-                  professional: professional,
-                  onTap: () => context.push(
-                    AppRoutes.professionalDetails(professional.id),
-                  ),
-                );
-              },
-            ),
+      body: favorites.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => _FavoritesError(
+          onRetry: () =>
+              ref.invalidate(favoriteProfessionalsControllerProvider),
+        ),
+        data: (state) => state.items.isEmpty
+            ? const _EmptyFavorites()
+            : RefreshIndicator(
+                onRefresh: ref
+                    .read(favoriteProfessionalsControllerProvider.notifier)
+                    .refresh,
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+                  itemCount: state.items.length + (state.hasNext ? 1 : 0),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 14),
+                  itemBuilder: (context, index) {
+                    if (index == state.items.length) {
+                      return Center(
+                        child: TextButton(
+                          onPressed: state.loadingMore
+                              ? null
+                              : ref
+                                    .read(
+                                      favoriteProfessionalsControllerProvider
+                                          .notifier,
+                                    )
+                                    .loadMore,
+                          child: state.loadingMore
+                              ? const SizedBox.square(
+                                  dimension: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text('Показать ещё'),
+                        ),
+                      );
+                    }
+                    final professional = state.items[index];
+                    return ProfessionalCard(
+                      professional: professional,
+                      onTap: () => context.push(
+                        AppRoutes.professionalDetails(professional.id),
+                      ),
+                    );
+                  },
+                ),
+              ),
+      ),
     );
   }
+}
+
+class _FavoritesError extends StatelessWidget {
+  const _FavoritesError({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) => Center(
+    child: Padding(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.error_outline_rounded, size: 48),
+          const SizedBox(height: 12),
+          const Text('Не удалось загрузить избранное'),
+          const SizedBox(height: 16),
+          FilledButton(onPressed: onRetry, child: const Text('Повторить')),
+        ],
+      ),
+    ),
+  );
 }
 
 class _EmptyFavorites extends StatelessWidget {

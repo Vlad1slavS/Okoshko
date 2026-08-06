@@ -18,4 +18,9 @@
 ### LP (Low priority)
 на будущее предусмотреть ETag или updatedAt для контроля жизни состояния Riverpod
 
+### Фичи
+- Автосоздание сторис по кнопке с доступными окнами
+- Подключить Yandex Object Storage
+- Infinity scroll на странице поиска
+
 
